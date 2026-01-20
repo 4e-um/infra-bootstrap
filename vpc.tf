@@ -4,7 +4,7 @@
 
 resource "google_compute_network" "main" {
   name                    = "${var.project_name}-vpc"
-  project                 = google_project.main.project_id
+  project                 = var.project_id
   auto_create_subnetworks = false
   routing_mode            = "REGIONAL"
 
@@ -18,7 +18,7 @@ resource "google_compute_network" "main" {
 # Main Subnet (GKE, Redis VMs, Monitor VMs)
 resource "google_compute_subnetwork" "main" {
   name          = "${var.project_name}-main-subnet"
-  project       = google_project.main.project_id
+  project       = var.project_id
   ip_cidr_range = var.main_subnet_cidr
   region        = var.region
   network       = google_compute_network.main.id
@@ -45,7 +45,7 @@ resource "google_compute_subnetwork" "main" {
 # Serverless Subnet (Cloud Run VPC Connector)
 resource "google_compute_subnetwork" "serverless" {
   name          = "${var.project_name}-serverless-subnet"
-  project       = google_project.main.project_id
+  project       = var.project_id
   ip_cidr_range = var.serverless_subnet_cidr
   region        = var.region
   network       = google_compute_network.main.id
@@ -59,7 +59,7 @@ resource "google_compute_subnetwork" "serverless" {
 
 resource "google_compute_global_address" "private_ip" {
   name          = "${var.project_name}-private-ip"
-  project       = google_project.main.project_id
+  project       = var.project_id
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16
@@ -81,7 +81,7 @@ resource "google_service_networking_connection" "private_vpc" {
 # Allow all internal traffic within VPC
 resource "google_compute_firewall" "allow_internal" {
   name    = "${var.project_name}-allow-internal"
-  project = google_project.main.project_id
+  project = var.project_id
   network = google_compute_network.main.name
 
   allow {
@@ -111,7 +111,7 @@ resource "google_compute_firewall" "allow_internal" {
 # Allow IAP SSH access (for VM management)
 resource "google_compute_firewall" "allow_iap_ssh" {
   name    = "${var.project_name}-allow-iap-ssh"
-  project = google_project.main.project_id
+  project = var.project_id
   network = google_compute_network.main.name
 
   allow {
@@ -128,7 +128,7 @@ resource "google_compute_firewall" "allow_iap_ssh" {
 # Allow health checks from Google Load Balancer
 resource "google_compute_firewall" "allow_health_checks" {
   name    = "${var.project_name}-allow-health-checks"
-  project = google_project.main.project_id
+  project = var.project_id
   network = google_compute_network.main.name
 
   allow {

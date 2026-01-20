@@ -1,30 +1,14 @@
 # =============================================================================
-# Organization Configuration
-# =============================================================================
-
-variable "org_id" {
-  description = "GCP Organization ID (mutually exclusive with folder_id)"
-  type        = string
-  default     = ""
-}
-
-variable "folder_id" {
-  description = "GCP Folder ID (mutually exclusive with org_id)"
-  type        = string
-  default     = ""
-}
-
-variable "billing_account_id" {
-  description = "GCP Billing Account ID"
-  type        = string
-}
-
-# =============================================================================
 # Project Configuration
 # =============================================================================
 
+variable "project_id" {
+  description = "GCP Project ID (must be created manually beforehand)"
+  type        = string
+}
+
 variable "project_name" {
-  description = "Project name (used as prefix for project ID)"
+  description = "Project name (used as prefix for resource names)"
   type        = string
   default     = "telecom-app"
 }

@@ -1,12 +1,11 @@
 # Infrastructure Bootstrap
 
-GCP 프로젝트 및 공유 네트워크 리소스를 생성하는 Terraform 모듈입니다.
+GCP 공유 네트워크 리소스를 생성하는 Terraform 모듈입니다.
 
 ## 생성되는 리소스
 
 | 리소스 | 설명 |
 |--------|------|
-| GCP Project | 새 프로젝트 생성 및 Billing 연결 |
 | APIs | 필요한 GCP API 활성화 |
 | VPC | 메인 VPC 네트워크 |
 | Subnets | GKE/VM용 메인 서브넷, Cloud Run용 서버리스 서브넷 |
@@ -18,7 +17,7 @@ GCP 프로젝트 및 공유 네트워크 리소스를 생성하는 Terraform 모
 ```
 infra-bootstrap (이 모듈)
     │
-    ├── GCP Project
+    ├── API Enablement
     ├── VPC + Subnets
     └── Firewall Rules
           │
@@ -34,9 +33,33 @@ infra-app   infra-monitor
 
 ## 사전 요구사항
 
-1. **GCP 권한**: Organization 또는 Folder 수준의 `Project Creator` 역할
+1. **GCP 프로젝트**: 수동으로 미리 생성 필요
 2. **Terraform Cloud/Scalr**: 워크스페이스 생성
-3. **인증**: GCP Service Account 또는 사용자 인증
+3. **인증**: GCP Service Account JSON 키
+
+### GCP 프로젝트 수동 생성
+
+```bash
+# 1. 프로젝트 생성
+gcloud projects create YOUR_PROJECT_ID --name="Your Project Name"
+
+# 2. Billing 연결
+gcloud billing projects link YOUR_PROJECT_ID --billing-account=BILLING_ACCOUNT_ID
+
+# 3. Service Account 생성
+gcloud iam service-accounts create terraform-cloud \
+  --project=YOUR_PROJECT_ID \
+  --display-name="Terraform Cloud"
+
+# 4. Owner 권한 부여
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+  --member="serviceAccount:terraform-cloud@YOUR_PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/owner"
+
+# 5. 키 생성
+gcloud iam service-accounts keys create key.json \
+  --iam-account=terraform-cloud@YOUR_PROJECT_ID.iam.gserviceaccount.com
+```
 
 ## Terraform Cloud/Scalr 설정
 
@@ -52,15 +75,13 @@ infra-app   infra-monitor
 
 | Variable | Type | Description |
 |----------|------|-------------|
-| `billing_account_id` | string | GCP Billing Account ID (예: `XXXXXX-XXXXXX-XXXXXX`) |
+| `project_id` | string | GCP Project ID (수동 생성한 프로젝트) |
 
 #### Optional Variables
 
 | Variable | Type | Default | Description |
 |----------|------|---------|-------------|
-| `org_id` | string | `""` | GCP Organization ID (folder_id와 택1) |
-| `folder_id` | string | `""` | GCP Folder ID (org_id와 택1) |
-| `project_name` | string | `"telecom-app"` | 프로젝트 이름 접두사 |
+| `project_name` | string | `"telecom-app"` | 리소스 이름 접두사 |
 | `environment` | string | `"dev"` | 환경 (dev/staging/prod) |
 | `region` | string | `"asia-northeast3"` | GCP 리전 |
 | `main_subnet_cidr` | string | `"10.0.0.0/20"` | 메인 서브넷 CIDR |
@@ -73,14 +94,14 @@ infra-app   infra-monitor
 
 | Variable | Description |
 |----------|-------------|
-| `GOOGLE_CREDENTIALS` | GCP Service Account JSON 키 |
+| `GOOGLE_CREDENTIALS` | GCP Service Account JSON 키 (Sensitive) |
 
 ## Outputs
 
 | Output | Description |
 |--------|-------------|
-| `project_id` | 생성된 GCP 프로젝트 ID |
-| `project_number` | 생성된 GCP 프로젝트 번호 |
+| `project_id` | GCP 프로젝트 ID |
+| `region` | GCP 리전 |
 | `vpc_id` | VPC ID |
 | `vpc_name` | VPC 이름 |
 | `vpc_self_link` | VPC Self Link |
@@ -89,7 +110,6 @@ infra-app   infra-monitor
 | `main_subnet_self_link` | 메인 서브넷 Self Link |
 | `serverless_subnet_id` | 서버리스 서브넷 ID |
 | `serverless_subnet_name` | 서버리스 서브넷 이름 |
-| `region` | GCP 리전 |
 
 ## 네트워크 구성
 
@@ -111,9 +131,10 @@ VPC: telecom-app-vpc
 
 ## 배포 순서
 
-1. **infra-bootstrap** (이 모듈) - 먼저 배포
-2. **infra-application** - bootstrap 완료 후 배포
-3. **infra-monitor** - (선택) 모니터링 인프라
+1. **GCP 프로젝트 수동 생성** (위 가이드 참조)
+2. **infra-bootstrap** (이 모듈) - API, VPC 설정
+3. **infra-application** - GKE, CloudSQL 등
+4. **infra-monitor** - (선택) 모니터링 인프라
 
 ## 로컬 테스트
 

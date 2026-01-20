@@ -3,18 +3,13 @@
 # =============================================================================
 
 output "project_id" {
-  description = "The created GCP project ID"
-  value       = google_project.main.project_id
+  description = "GCP project ID"
+  value       = var.project_id
 }
 
-output "project_number" {
-  description = "The created GCP project number"
-  value       = google_project.main.number
-}
-
-output "project_name" {
-  description = "The created GCP project name"
-  value       = google_project.main.name
+output "region" {
+  description = "GCP region"
+  value       = var.region
 }
 
 # =============================================================================
@@ -70,11 +65,6 @@ output "serverless_subnet_name" {
   value       = google_compute_subnetwork.serverless.name
 }
 
-output "region" {
-  description = "GCP region"
-  value       = var.region
-}
-
 # =============================================================================
 # Enabled APIs
 # =============================================================================
@@ -91,13 +81,13 @@ output "enabled_apis" {
 output "next_steps" {
   description = "Instructions for next steps"
   value       = <<-EOT
-    Project and VPC created successfully!
+    Bootstrap completed successfully!
 
     Next steps:
     1. Run infra-application (uses remote state from this workspace)
     2. Run infra-monitor (uses remote state from this workspace)
 
     GKE credentials command (after infra-application apply):
-       gcloud container clusters get-credentials telecom-app-cluster --region ${var.region} --project ${google_project.main.project_id}
+       gcloud container clusters get-credentials telecom-app-cluster --region ${var.region} --project ${var.project_id}
   EOT
 }
