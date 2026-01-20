@@ -47,12 +47,6 @@ variable "services_cidr" {
   default     = "10.8.0.0/20"
 }
 
-variable "serverless_subnet_cidr" {
-  description = "CIDR for serverless VPC connector subnet"
-  type        = string
-  default     = "10.1.0.0/28"
-}
-
 # =============================================================================
 # Optional Features
 # =============================================================================

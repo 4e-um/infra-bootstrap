@@ -55,16 +55,6 @@ output "main_subnet_self_link" {
   value       = google_compute_subnetwork.main.self_link
 }
 
-output "serverless_subnet_id" {
-  description = "Serverless subnet ID"
-  value       = google_compute_subnetwork.serverless.id
-}
-
-output "serverless_subnet_name" {
-  description = "Serverless subnet name"
-  value       = google_compute_subnetwork.serverless.name
-}
-
 # =============================================================================
 # Enabled APIs
 # =============================================================================

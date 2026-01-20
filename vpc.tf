@@ -42,17 +42,6 @@ resource "google_compute_subnetwork" "main" {
   }
 }
 
-# Serverless Subnet (Cloud Run VPC Connector)
-resource "google_compute_subnetwork" "serverless" {
-  name          = "${var.project_name}-serverless-subnet"
-  project       = var.project_id
-  ip_cidr_range = var.serverless_subnet_cidr
-  region        = var.region
-  network       = google_compute_network.main.id
-
-  private_ip_google_access = true
-}
-
 # =============================================================================
 # Private Service Access (for CloudSQL)
 # =============================================================================
@@ -102,7 +91,6 @@ resource "google_compute_firewall" "allow_internal" {
     var.main_subnet_cidr,
     var.pods_cidr,
     var.services_cidr,
-    var.serverless_subnet_cidr,
   ]
 
   priority = 1000
