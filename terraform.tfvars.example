@@ -1,0 +1,34 @@
+# =============================================================================
+# Bootstrap Variables Example
+# =============================================================================
+# Copy this file to terraform.tfvars and fill in the values
+# Or set these in Terraform Cloud/Scalr workspace variables
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Organization Configuration (one of org_id or folder_id required)
+# -----------------------------------------------------------------------------
+
+# Option 1: Create project under Organization
+# org_id = "123456789012"
+
+# Option 2: Create project under Folder
+# folder_id = "folders/123456789012"
+
+# Billing Account (required)
+billing_account_id = "XXXXXX-XXXXXX-XXXXXX"
+
+# -----------------------------------------------------------------------------
+# Project Configuration
+# -----------------------------------------------------------------------------
+
+project_name = "telecom-app"
+environment  = "dev"
+region       = "asia-northeast3"
+
+# -----------------------------------------------------------------------------
+# Optional Features
+# -----------------------------------------------------------------------------
+
+# Set to true if NOT using Terraform Cloud/Scalr for infra-application
+create_state_bucket = false
