@@ -46,17 +46,20 @@ gcloud projects create YOUR_PROJECT_ID --name="Your Project Name"
 # 2. Billing 연결
 gcloud billing projects link YOUR_PROJECT_ID --billing-account=BILLING_ACCOUNT_ID
 
-# 3. Service Account 생성
+# 3. Cloud Resource Manager API 활성화 (Terraform이 다른 API를 관리하기 위해 필요)
+gcloud services enable cloudresourcemanager.googleapis.com --project=YOUR_PROJECT_ID
+
+# 4. Service Account 생성
 gcloud iam service-accounts create terraform-cloud \
   --project=YOUR_PROJECT_ID \
   --display-name="Terraform Cloud"
 
-# 4. Owner 권한 부여
+# 5. Owner 권한 부여
 gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
   --member="serviceAccount:terraform-cloud@YOUR_PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/owner"
 
-# 5. 키 생성
+# 6. 키 생성
 gcloud iam service-accounts keys create key.json \
   --iam-account=terraform-cloud@YOUR_PROJECT_ID.iam.gserviceaccount.com
 ```
