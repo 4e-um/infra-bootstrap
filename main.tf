@@ -45,6 +45,7 @@ resource "google_project_service" "apis" {
     # Serverless
     "run.googleapis.com",
     "cloudscheduler.googleapis.com",
+    "cloudtasks.googleapis.com",
     "vpcaccess.googleapis.com",
 
     # Security
