@@ -46,6 +46,7 @@ resource "google_project_service" "apis" {
     "run.googleapis.com",
     "cloudscheduler.googleapis.com",
     "cloudtasks.googleapis.com",
+    "workflows.googleapis.com",
     "vpcaccess.googleapis.com",
 
     # Security
